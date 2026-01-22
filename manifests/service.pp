@@ -1,8 +1,7 @@
 # @summary
-#   Configure a restic service
+# Configure a restic service
 #
 # @api private
-#
 define restic::service (
   $commands,
   $config,
@@ -15,6 +14,19 @@ define restic::service (
 ) {
   assert_private()
 
+  # Keep the module's current design:
+  # - Build the real unit file via concat in the vendor unit directory
+  # - Then create a symlink in /etc/systemd/system via systemd::unit_file
+  #
+  # Upstream hardcodes /lib/systemd/system. :contentReference[oaicite:4]{index=4}
+  # On EL9 (RHEL/Alma/Rocky), vendor units live in /usr/lib/systemd/system.
+  $unit_dir = $facts['os']['family'] ? {
+    'RedHat' => '/usr/lib/systemd/system',
+    default  => '/lib/systemd/system',
+  }
+
+  $unit_file = "${unit_dir}/${title}.service"
+
   if $enable {
     $configs.each |$key,$data| {
       concat::fragment { "restic_fragment_${title}_${key}":
@@ -22,7 +34,6 @@ define restic::service (
         target  => $config,
       }
     }
-
     $ensure = 'present'
   } else {
     $ensure = 'absent'
@@ -34,7 +45,7 @@ define restic::service (
   ## to inject pre/post scripts into the restic backup job. This is helpful
   ## if you want to e.g. trigger database backups/cleanups
   ##
-  concat { "/lib/systemd/system/${title}.service":
+  concat { $unit_file:
     ensure         => $ensure,
     ensure_newline => true,
     owner          => 'root',
@@ -43,26 +54,32 @@ define restic::service (
     show_diff      => true,
   }
 
-  concat::fragment { "/lib/systemd/system/${title}.service-base":
-    content => epp("${module_name}/restic.service.epp", { config => $config, group => $group, user => $user, success_exit_status => $success_exit_status }),
-    target  => "/lib/systemd/system/${title}.service",
+  concat::fragment { "${unit_file}-base":
+    content => epp("${module_name}/restic.service.epp", {
+      config              => $config,
+      group               => $group,
+      user                => $user,
+      success_exit_status => $success_exit_status,
+    }),
+    target  => $unit_file,
   }
 
   $commands_template = @(END/L)
-  <% $commands.each |$command| { -%>
-  ExecStart=<%= $command %>
-  <% } -%>
+<% $commands.each |$command| { -%>
+ExecStart=<%= $command %>
+<% } -%>
   | END
 
-  concat::fragment { "/lib/systemd/system/${title}.service-commands":
+  concat::fragment { "${unit_file}-commands":
     content => inline_epp($commands_template),
-    target  => "/lib/systemd/system/${title}.service",
+    target  => $unit_file,
     order   => '25',
   }
 
+  # Symlink into /etc/systemd/system (matches upstream behavior). :contentReference[oaicite:5]{index=5}
   systemd::unit_file { "${title}.service":
     ensure    => $ensure,
-    target    => "/lib/systemd/system/${title}.service",
+    target    => $unit_file,
     group     => 'root',
     mode      => '0440',
     owner     => 'root',

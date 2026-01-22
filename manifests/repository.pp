@@ -235,8 +235,22 @@ define restic::repository (
     }
   }
 
-  $config_file   = "/etc/default/restic_${title}"
-  $type_config   = $_type ? {
+
+  $config_dir = $facts['os']['family'] ? {
+    'RedHat' => '/etc/sysconfig',
+    default  => '/etc/default',
+  }
+
+  file { $config_dir:
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  $config_file = "${config_dir}/restic_${title}"
+
+  $type_config = $_type ? {
     's3'    => {
       'AWS_ACCESS_KEY_ID'     => $_id,
       'AWS_SECRET_ACCESS_KEY' => $_key,
@@ -244,10 +258,10 @@ define restic::repository (
       'RESTIC_REPOSITORY'     => $repository,
     },
     'gs' => {
-      'GOOGLE_PROJECT_ID'                => $_gcs_project_id,
-      'GOOGLE_APPLICATION_CREDENTIALS'   => $_gcs_credentials_path,
-      'RESTIC_PASSWORD'                  => $_password,
-      'RESTIC_REPOSITORY'                => $repository,
+      'GOOGLE_PROJECT_ID'              => $_gcs_project_id,
+      'GOOGLE_APPLICATION_CREDENTIALS' => $_gcs_credentials_path,
+      'RESTIC_PASSWORD'                => $_password,
+      'RESTIC_REPOSITORY'              => $repository,
     },
     default => {
       'RESTIC_PASSWORD'   => $_password,
@@ -275,6 +289,7 @@ define restic::repository (
       mode           => '0440',
       owner          => 'root',
       show_diff      => true,
+      require        => File[$config_dir],
     }
 
     $config_keys = {
@@ -296,6 +311,7 @@ define restic::repository (
   } else {
     concat { $config_file:
       ensure => 'absent',
+      require => File[$config_dir],
     }
   }
 
