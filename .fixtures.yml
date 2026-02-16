@@ -5,13 +5,9 @@ fixtures:
   forge_modules:
     systemd:
       repo: 'puppet/systemd'
-      ref: '3.10.0'
     concat:
       repo: 'puppetlabs/concat'
-      ref: '7.4.0'
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '8.2.0'
     archive:
       repo: 'puppet/archive'
-      ref: '6.1.0'
