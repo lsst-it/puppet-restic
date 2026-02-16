@@ -4,14 +4,14 @@
 # @api private
 #
 define restic::service (
-  $commands,
-  $config,
-  $configs,
-  $enable,
-  $group,
-  $user,
-  $timer,
-  $success_exit_status = undef,
+  Array[String[1]] $commands,
+  Stdlib::Unixpath $config,
+  Array[String[1]] $configs,
+  Boolean $enable,
+  Variant[String[1],Integer] $group,
+  Variant[String[1],Integer] $user,
+  Optional[String[1]] $timer = undef,
+  Optional[Integer] $success_exit_status = undef,
 ) {
   assert_private()
 
@@ -49,10 +49,10 @@ define restic::service (
   }
 
   $commands_template = @(END/L)
-  <% $commands.each |$command| { -%>
-  ExecStart=<%= $command %>
-  <% } -%>
-  | END
+    <% $commands.each |$command| { -%>
+    ExecStart=<%= $command %>
+    <% } -%>
+    | END
 
   concat::fragment { "/lib/systemd/system/${title}.service-commands":
     content => inline_epp($commands_template),

@@ -20,7 +20,7 @@ define restic::repository::pre_command (
 ) {
   $service_title = "restic_${restic_command}_${repository_title}"
   $command_md5   = md5(String($command))
-  $_command      = [ $command, ].flatten.map |$c| { "ExecStartPre=${_allow_fail}${c}" }
+  $_command      = [$command,].flatten.map |$c| { "ExecStartPre=${_allow_fail}${c}" }
   $_allow_fail   = $allow_fail ? {
     true  => '-',
     false => '',

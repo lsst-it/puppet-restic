@@ -68,6 +68,10 @@ The following parameters are available in the `restic` class:
 * [`forget_post_cmd`](#-restic--forget_post_cmd)
 * [`forget_timer`](#-restic--forget_timer)
 * [`global_flags`](#-restic--global_flags)
+* [`max_cpus`](#-restic--max_cpus)
+* [`gcs_credentials_path`](#-restic--gcs_credentials_path)
+* [`gcs_project_id`](#-restic--gcs_project_id)
+* [`gcs_repository`](#-restic--gcs_repository)
 * [`group`](#-restic--group)
 * [`host`](#-restic--host)
 * [`id`](#-restic--id)
@@ -81,6 +85,9 @@ The following parameters are available in the `restic` class:
 * [`restore_post_cmd`](#-restic--restore_post_cmd)
 * [`restore_snapshot`](#-restic--restore_snapshot)
 * [`restore_timer`](#-restic--restore_timer)
+* [`sftp_port`](#-restic--sftp_port)
+* [`sftp_repository`](#-restic--sftp_repository)
+* [`sftp_user`](#-restic--sftp_user)
 * [`type`](#-restic--type)
 * [`user`](#-restic--user)
 
@@ -276,6 +283,38 @@ Default global flags for `restic <flags>`. See `restic --help`
 
 Default value: `[]`
 
+##### <a name="-restic--max_cpus"></a>`max_cpus`
+
+Data type: `Optional[Integer[1]]`
+
+Limit the number of CPU cores restic can use by setting the env variable GOMAXPROCS
+
+Default value: `undef`
+
+##### <a name="-restic--gcs_credentials_path"></a>`gcs_credentials_path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
+
+Default value: `undef`
+
+##### <a name="-restic--gcs_project_id"></a>`gcs_project_id`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+Default Google Cloud project id see: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+
+Default value: `undef`
+
+##### <a name="-restic--gcs_repository"></a>`gcs_repository`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+Default repository name used in Google Cloud Storage buckets
+
+Default value: `undef`
+
 ##### <a name="-restic--group"></a>`group`
 
 Data type: `String`
@@ -382,11 +421,35 @@ Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/T
 
 Default value: `undef`
 
+##### <a name="-restic--sftp_port"></a>`sftp_port`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The port used to connect with sft. If the port is 22, this does not need to be filled in as Restic automatically uses this port
+
+Default value: `undef`
+
+##### <a name="-restic--sftp_repository"></a>`sftp_repository`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The path to the repository on the SFTP server
+
+Default value: `undef`
+
+##### <a name="-restic--sftp_user"></a>`sftp_user`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The user who connects to the SFTP repository
+
+Default value: `undef`
+
 ##### <a name="-restic--type"></a>`type`
 
 Data type: `Restic::Repository::Type`
 
-Default name for the Restic repository. Only S3 supported
+Default name for the Restic repository. s3, gs, rest and sftp are supported.
 
 Default value: `'s3'`
 
@@ -425,6 +488,10 @@ The following parameters are available in the `restic::repository` defined type:
 * [`forget_post_cmd`](#-restic--repository--forget_post_cmd)
 * [`forget_timer`](#-restic--repository--forget_timer)
 * [`global_flags`](#-restic--repository--global_flags)
+* [`max_cpus`](#-restic--repository--max_cpus)
+* [`gcs_credentials_path`](#-restic--repository--gcs_credentials_path)
+* [`gcs_project_id`](#-restic--repository--gcs_project_id)
+* [`gcs_repository`](#-restic--repository--gcs_repository)
 * [`group`](#-restic--repository--group)
 * [`host`](#-restic--repository--host)
 * [`id`](#-restic--repository--id)
@@ -438,6 +505,9 @@ The following parameters are available in the `restic::repository` defined type:
 * [`restore_post_cmd`](#-restic--repository--restore_post_cmd)
 * [`restore_snapshot`](#-restic--repository--restore_snapshot)
 * [`restore_timer`](#-restic--repository--restore_timer)
+* [`sftp_port`](#-restic--repository--sftp_port)
+* [`sftp_repository`](#-restic--repository--sftp_repository)
+* [`sftp_user`](#-restic--repository--sftp_user)
 * [`type`](#-restic--repository--type)
 * [`user`](#-restic--repository--user)
 
@@ -577,6 +647,38 @@ Default global flags for `restic <flags>`. See `restic --help`
 
 Default value: `undef`
 
+##### <a name="-restic--repository--max_cpus"></a>`max_cpus`
+
+Data type: `Optional[Integer[1]]`
+
+Limit the number of CPU cores restic can use by setting the env variable GOMAXPROCS
+
+Default value: `undef`
+
+##### <a name="-restic--repository--gcs_credentials_path"></a>`gcs_credentials_path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
+
+Default value: `undef`
+
+##### <a name="-restic--repository--gcs_project_id"></a>`gcs_project_id`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+Default Google Cloud project id see: https://cloud.google.com/resource-manager/docs/creating-managing-projects
+
+Default value: `undef`
+
+##### <a name="-restic--repository--gcs_repository"></a>`gcs_repository`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+Default repository name used in Google Cloud Storage buckets
+
+Default value: `undef`
+
 ##### <a name="-restic--repository--group"></a>`group`
 
 Data type: `Optional[String]`
@@ -683,11 +785,35 @@ Default systemd timer for restore see: https://wiki.archlinux.de/title/Systemd/T
 
 Default value: `undef`
 
+##### <a name="-restic--repository--sftp_port"></a>`sftp_port`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The port used to connect with sft. If the port is 22, this does not need to be filled in as Restic automatically uses this port
+
+Default value: `undef`
+
+##### <a name="-restic--repository--sftp_repository"></a>`sftp_repository`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The path to the repository on the SFTP server
+
+Default value: `undef`
+
+##### <a name="-restic--repository--sftp_user"></a>`sftp_user`
+
+Data type: `Optional[Variant[Sensitive[String],String]]`
+
+The user who connects to the SFTP repository
+
+Default value: `undef`
+
 ##### <a name="-restic--repository--type"></a>`type`
 
 Data type: `Optional[Restic::Repository::Type]`
 
-Default name for the Restic repository. Only S3 supported
+Default name for the Restic repository. s3, gs, rest and sftp are supported.
 
 Default value: `undef`
 
@@ -863,6 +989,10 @@ Hash[String[1], Struct[
       forget_pre_cmd       => Optional[Variant[Array[String[1]],String[1]]],
       forget_timer         => Optional[String[1]],
       global_flags         => Optional[Variant[Array[String[1]],String[1]]],
+      max_cpus             => Optional[Integer[1]],
+      gcs_credentials_path => Optional[Stdlib::Absolutepath],
+      gcs_project_id       => Optional[Variant[Sensitive[String],String]],
+      gcs_repository       => Optional[Variant[Sensitive[String],String]],
       group                => Optional[String],
       host                 => Optional[Variant[Sensitive[String],String]],
       id                   => Optional[Variant[Sensitive[String],String]],
@@ -876,6 +1006,9 @@ Hash[String[1], Struct[
       restore_pre_cmd      => Optional[Variant[Array[String[1]],String[1]]],
       restore_snapshot     => Optional[String[1]],
       restore_timer        => Optional[String[1]],
+      sftp_port            => Optional[Variant[Sensitive[String],String]],
+      sftp_repository      => Optional[Variant[Sensitive[String],String]],
+      sftp_user            => Optional[Variant[Sensitive[String],String]],
       type                 => Optional[Restic::Repository::Type],
       user                 => Optional[String[1]],
     }
@@ -886,5 +1019,5 @@ Hash[String[1], Struct[
 
 All valid repository types
 
-Alias of `Enum['rest', 's3']`
+Alias of `Enum['rest', 's3', 'gs', 'sftp']`
 

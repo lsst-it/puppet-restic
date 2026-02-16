@@ -4,12 +4,12 @@
 # @api private
 #
 class restic::package (
-  $package_ensure  = $restic::package_ensure,
-  $package_manage  = $restic::package_manage,
-  $package_name    = $restic::package_name,
-  $package_version = $restic::package_version,
-  $checksum        = $restic::checksum,
-  $install_method  = $restic::install_method,
+  Stdlib::Ensure::Package $package_ensure = $restic::package_ensure,
+  Boolean $package_manage                 = $restic::package_manage,
+  String[1] $package_name                 = $restic::package_name,
+  Optional[String[1]] $package_version    = $restic::package_version,
+  Optional[String[1]] $checksum           = $restic::checksum,
+  Enum['package', 'url'] $install_method  = $restic::install_method,
 ) {
   assert_private()
 

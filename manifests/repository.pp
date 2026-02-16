@@ -55,7 +55,7 @@
 # @param max_cpus
 #   Limit the number of CPU cores restic can use by setting the env variable GOMAXPROCS
 #
-# @param gcs_credentials
+# @param gcs_credentials_path
 #   Default path to the file containing the Google Cloud service account credentials which allows access to the bucket. Need to be downloaded from Google Cloud see: https://cloud.google.com/iam/docs/service-account-creds
 #
 # @param gcs_project_id
@@ -278,7 +278,7 @@ define restic::repository (
     }
 
     $config_keys = {
-      'GLOBAL_FLAGS' => [ $_global_flags, ].flatten.join(' '),
+      'GLOBAL_FLAGS' => [$_global_flags,].flatten.join(' '),
       'GOMAXPROCS'   => $_max_cpus,
     } + $type_config
 
@@ -309,7 +309,7 @@ define restic::repository (
   ].flatten.delete_undef_values
 
   $backup_keys = {
-    'BACKUP_FLAGS' => [ $_backup_flags, $_backup_path, ].flatten.join(' '),
+    'BACKUP_FLAGS' => [$_backup_flags, $_backup_path,].flatten.join(' '),
   }
 
   restic::service { "restic_backup_${title}":
@@ -336,7 +336,7 @@ define restic::repository (
   $forgets       = $_forget.map |$k,$v| { "--${k} ${v}" }
   $forget_prune  = if $_prune { '--prune' } else { undef }
   $forget_keys   = {
-    'FORGET_FLAGS' => [ $forgets, $forget_prune, $_forget_flags, ].delete_undef_values.flatten.join(' '),
+    'FORGET_FLAGS' => [$forgets, $forget_prune, $_forget_flags,].delete_undef_values.flatten.join(' '),
   }
 
   restic::service { "restic_forget_${title}":
@@ -360,7 +360,7 @@ define restic::repository (
   ].flatten.delete_undef_values
 
   $restore_keys = {
-    'RESTORE_FLAGS' => [ "-t ${_restore_path}", $_restore_flags, $_restore_snapshot, ].flatten.join(' '),
+    'RESTORE_FLAGS' => ["-t ${_restore_path}", $_restore_flags, $_restore_snapshot,].flatten.join(' '),
   }
 
   restic::service { "restic_restore_${title}":
